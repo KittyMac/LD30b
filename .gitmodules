@@ -1,0 +1,6 @@
+[submodule "Assets/PlanetUnity"]
+	path = Assets/PlanetUnity
+	url = https://github.com/SmallPlanetUnity/PlanetUnity
+[submodule "Assets/Resources/PlanetUnityShaders"]
+	path = Assets/Resources/PlanetUnityShaders
+	url = https://github.com/SmallPlanetUnity/PlanetUnityShaders
