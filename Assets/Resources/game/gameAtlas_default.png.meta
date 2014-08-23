@@ -1,0 +1,180 @@
+fileFormatVersion: 2
+guid: a3eb5f8d5b35c40d294da23b971546af
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: buildQueue
+    21300002: bluePlanet
+    21300004: redFrigate
+    21300006: blueFrigate
+    21300008: equipment3
+    21300010: equipment0
+    21300012: redPlanet
+    21300014: equipment1
+    21300016: equipment2
+    21300018: blueScout
+    21300020: redScout
+    21300022: redCapital
+    21300024: blueCapital
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: .25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  seamlessCubemap: 0
+  textureFormat: -3
+  maxTextureSize: 1024
+  textureSettings:
+    filterMode: -1
+    aniso: 1
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: .5, y: .5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: bluePlanet
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 665
+        width: 359
+        height: 359
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: blueCapital
+      rect:
+        serializedVersion: 2
+        x: 369
+        y: 955
+        width: 94
+        height: 69
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: equipment0
+      rect:
+        serializedVersion: 2
+        x: 473
+        y: 988
+        width: 37
+        height: 36
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: blueScout
+      rect:
+        serializedVersion: 2
+        x: 473
+        y: 949
+        width: 27
+        height: 29
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: redCapital
+      rect:
+        serializedVersion: 2
+        x: 369
+        y: 876
+        width: 94
+        height: 69
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: redScout
+      rect:
+        serializedVersion: 2
+        x: 473
+        y: 910
+        width: 27
+        height: 29
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: redFrigate
+      rect:
+        serializedVersion: 2
+        x: 369
+        y: 818
+        width: 56
+        height: 48
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: blueFrigate
+      rect:
+        serializedVersion: 2
+        x: 435
+        y: 818
+        width: 56
+        height: 48
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: equipment1
+      rect:
+        serializedVersion: 2
+        x: 369
+        y: 764
+        width: 43
+        height: 44
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: equipment2
+      rect:
+        serializedVersion: 2
+        x: 422
+        y: 772
+        width: 41
+        height: 36
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: equipment3
+      rect:
+        serializedVersion: 2
+        x: 422
+        y: 722
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: redPlanet
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 296
+        width: 359
+        height: 359
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+  spritePackingTag: 
+  userData: 

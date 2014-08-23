@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+    xmlns:LD30Game="http://schema.chimerasw.com/LD30Game"
+    targetNamespace="http://schema.chimerasw.com/LD30Game">
+
+	<!-- Type declarations for custom classes -->
+	<simpleType name="color">
+		<annotation>
+			<appinfo>cColor</appinfo>
+		</annotation>
+        <restriction base="string" />
+    </simpleType>
+
+	<simpleType name="vec2">
+		<annotation>
+			<appinfo>cVector2</appinfo>
+		</annotation>
+        <restriction base="string" />
+    </simpleType>
+
+	<simpleType name="vec3">
+		<annotation>
+			<appinfo>cVector3</appinfo>
+		</annotation>
+        <restriction base="string" />
+    </simpleType>
+
+	<simpleType name="vec4">
+		<annotation>
+			<appinfo>cVector4</appinfo>
+		</annotation>
+        <restriction base="string" />
+    </simpleType>
+
+	<simpleType name="vecN">
+		<annotation>
+			<appinfo>cVectorN</appinfo>
+		</annotation>
+        <restriction base="string" />
+    </simpleType>
+
+	<simpleType name="uuid">
+		<annotation>
+			<appinfo>cUUID</appinfo>
+		</annotation>
+        <restriction base="string" />
+    </simpleType>
+
+	<simpleType name="rect">
+		<annotation>
+			<appinfo>cRect</appinfo>
+		</annotation>
+        <restriction base="string" />
+    </simpleType>
+
+	<simpleType name="json">
+		<annotation>
+			<appinfo>tJSON</appinfo>
+		</annotation>
+		<restriction base="string"/>
+	</simpleType>
+
+	<!-- Game specific types -->
+		
+	<!-- Classes -->
+	
+	<element name="Planet" type="LD30Game:Planet" />
+	<complexType name="Planet">
+		<sequence>
+			<element ref="LD30Game:Ship" minOccurs="0" maxOccurs="unbounded"/>
+			<element ref="LD30Game:Equipment" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+		<attribute name="health" type="float" />
+		<attribute name="buildTime" type="float" />
+	</complexType>
+	
+	<element name="Ship" type="LD30Game:Ship" />
+	<complexType name="Ship">
+		<sequence>
+			<element ref="LD30Game:Equipment" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+		<attribute name="player" type="int" />
+		<attribute name="structure" type="int" />
+		<attribute name="armor" type="int" />
+		<attribute name="shields" type="int" />
+	</complexType>
+	
+	<element name="Game">
+        <complexType>
+			<sequence>
+				<element ref="LD30Game:Equipment" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="LD30Game:Planet" minOccurs="0" maxOccurs="unbounded"/>
+	        </sequence>
+			<attribute name="saveGameTag" type="int" />
+        </complexType>
+	</element>
+	
+	
+	
+	<element name="Equipment" type="LD30Game:Equipment" />
+	<complexType name="Equipment">
+		<attribute name="dmgStructure" type="float" />
+		<attribute name="dmgShields" type="float" />
+		<attribute name="dmgArmor" type="float" />
+		<attribute name="spread" type="float" />
+		
+		<attribute name="armor" type="float" />
+		<attribute name="structure" type="float" />
+		<attribute name="speed" type="float" />
+		<attribute name="turning" type="float" />
+						
+		<attribute name="special" type="int" />
+		
+		<attribute name="name" type="string" />
+		
+		<attribute name="icon" type="int" />
+		<attribute name="time" type="int" />
+		
+		<attribute name="position" type="LD30Game:vec3" />
+		<attribute name="rotation" type="LD30Game:vec3" />
+	</complexType>
+	
+	<element name="AllEquipment">
+        <complexType>
+			<sequence>
+				<element ref="LD30Game:Equipment" minOccurs="0" maxOccurs="unbounded"/>
+	        </sequence>
+        </complexType>
+	</element>
+
+</schema>
