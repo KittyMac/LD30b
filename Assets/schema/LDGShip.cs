@@ -54,13 +54,31 @@ public partial class LDGShip : LDGShipBase {
 
 		switch (ShipSize ()) {
 		case 0:
-			baseV = 25.0f;
+			baseV = 80.0f;
 			break;
 		case 1:
-			baseV = 12.0f;
+			baseV = 20.0f;
 			break;
 		case 2:
-			baseV = 4.0f;
+			baseV = 10.0f;
+			break;
+		}
+
+		return baseV;
+	}
+
+	public float TurnRate() {
+		float baseV = 1.0f;
+
+		switch (ShipSize ()) {
+		case 0:
+			baseV = 2.0f;
+			break;
+		case 1:
+			baseV = 1.0f;
+			break;
+		case 2:
+			baseV = 0.25f;
 			break;
 		}
 

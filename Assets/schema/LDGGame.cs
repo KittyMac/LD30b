@@ -24,7 +24,7 @@ public partial class LDGGame : LDGGameBase {
 		}
 
 		// 1b) Now add more random copies for fun
-		int copies = UnityEngine.Random.Range (allEquipment.Count, allEquipment.Count * 3);
+		int copies = UnityEngine.Random.Range (allEquipment.Count * 3, allEquipment.Count * 6);
 		for (int i = 0; i < copies; i++) {
 			LDGEquipment equipment = allEquipment [UnityEngine.Random.Range (0, allEquipment.Count)];
 			game.AddSpaceEquipment (equipment);
@@ -115,7 +115,6 @@ public partial class LDGGame : LDGGameBase {
 			v.x += e.velocity.x;
 			v.y += e.velocity.y;
 			e.sprite.gameObject.transform.localPosition = v;
-
 			e.velocity.x *= 0.95f;
 			e.velocity.y *= 0.95f;
 		}
@@ -144,29 +143,20 @@ public partial class LDGGame : LDGGameBase {
 			}
 		}
 
+		// Wrap all sprite positions
+		foreach(LDGEquipment e in Equipments)
+		{
+			WrapSpriteIfNecessary (e.sprite);
+		}
+		foreach(LDGShip ship in Ships)
+		{
+			WrapSpriteIfNecessary (ship.sprite);
+		}
 
 
 	}
 
-	// We going to do a generic flocking algorithm for the ships, always targetting weakest
 	public void PerformShipMovementForPlayer(int p){
-		// Figure out the flock center and the flock velocity
-
-		Vector3 center = Vector3.zero;
-		Vector3 velocity = Vector3.zero;
-		float n = 0;
-
-		foreach (LDGShip ship in Ships)
-		{
-			if (ship.player == p) {
-				center = center + ship.sprite.gameObject.transform.localPosition;
-				velocity = velocity + ship.velocity;
-				n++;
-			}
-		}
-
-		center = center / n;
-		velocity = velocity / n;
 
 		Vector3 targetPosition = new Vector3 (484,351, 0);
 
@@ -186,13 +176,68 @@ public partial class LDGGame : LDGGameBase {
 
 		foreach (LDGShip ship in Ships) {
 			if (ship.player == p) {
-				PerformFlocking (ship, center, velocity, targetPosition);
+
+
+				// Determine whether turning left, going straight, or going right gets us closer to our target
+				float centerRot = ship.sprite.gameObject.transform.localEulerAngles.z;
+				float leftRot = ship.sprite.gameObject.transform.localEulerAngles.z + ship.TurnRate();
+				float rightRot = ship.sprite.gameObject.transform.localEulerAngles.z - ship.TurnRate();
+
+
+				Vector3 vector = new Vector3(ship.MaxVelocity() * Time.fixedDeltaTime, 0.0f, 0.0f);
+				Vector3 currentPos = ship.sprite.gameObject.transform.localPosition;
+				Vector3 rightPos = currentPos + RotateZ(rightRot, vector);
+				Vector3 leftPos = currentPos + RotateZ(leftRot, vector);
+				Vector3 centerPos = currentPos + RotateZ(centerRot, vector);
+
+				float leftDist = Vector3.Distance (leftPos, targetPosition);
+				float rightDist = Vector3.Distance (rightPos, targetPosition);
+				float centerDist = Vector3.Distance (centerPos, targetPosition);
+
+				if (leftDist < centerDist && leftDist < rightDist) {
+					ship.sprite.gameObject.transform.localEulerAngles = new Vector3 (0, 0, leftRot);
+					ship.sprite.gameObject.transform.localPosition = leftPos;
+				} else if (rightDist < centerDist && rightDist < leftDist) {
+					ship.sprite.gameObject.transform.localEulerAngles = new Vector3 (0, 0, rightRot);
+					ship.sprite.gameObject.transform.localPosition = rightPos;
+				} else {
+					ship.sprite.gameObject.transform.localEulerAngles = new Vector3 (0, 0, centerRot);
+					ship.sprite.gameObject.transform.localPosition = centerPos;
+				}
+
 
 				if (targetShip != null) {
 					FireAllAvailableWeapons (ship, targetShip);
 				}
 			}
 		}
+	}
+
+	private Vector3 RotateZ(float angle, Vector3 p)
+	{
+		float c = Mathf.Cos(angle*0.01745329252f);
+		float s = Mathf.Sin(angle*0.01745329252f);
+		return new Vector3(p.x*c-p.y*s, p.x*s+p.y*c, p.z);
+	}
+
+	private void WrapSpriteIfNecessary(PUSprite sprite)
+	{
+		Vector3 pos = sprite.gameObject.transform.localPosition;
+
+		while (pos.x > 960) {
+			pos.x -= 960;
+		}
+		while (pos.x < 0) {
+			pos.x += 960;
+		}
+		while (pos.y > 600) {
+			pos.y -= 600;
+		}
+		while (pos.y < 0) {
+			pos.y += 600;
+		}
+
+		sprite.gameObject.transform.localPosition = pos;
 	}
 
 	public void FireAllAvailableWeapons(LDGShip fromShip, LDGShip toShip) {
@@ -211,46 +256,6 @@ public partial class LDGGame : LDGGameBase {
 				}
 			}
 		}
-	}
-
-	public void PerformFlocking(LDGShip ship, Vector3 flockCenter, Vector3 flockVelocity, Vector3 targetPosition) {
-
-		float maxVelocity = ship.MaxVelocity ();
-		float minVelocity = 0.5f;
-		float randomness = 200.0f;
-
-		targetPosition.x = Mathf.Clamp (targetPosition.x, 50, 960-100);
-		targetPosition.y = Mathf.Clamp (targetPosition.y, 50, 600-100);
-
-		Vector3 randomize = new Vector3 ((UnityEngine.Random.value *2) -1, (UnityEngine.Random.value * 2) -1, (UnityEngine.Random.value * 2) -1);
-		randomize.Normalize();
-		flockCenter = flockCenter - ship.sprite.gameObject.transform.localPosition;
-		flockVelocity = flockVelocity - ship.velocity;
-		targetPosition = targetPosition - ship.sprite.gameObject.transform.localPosition;
-		Vector3 calc = (flockCenter + flockVelocity + targetPosition * 2 + randomize * randomness);
-
-
-
-		ship.velocity = ship.velocity + calc * Time.deltaTime;
-
-		// enforce minimum and maximum speeds for the boids
-		float speed = ship.velocity.magnitude;
-		if (speed > maxVelocity)
-		{
-			ship.velocity = ship.velocity.normalized * maxVelocity;
-		}
-		else if (speed < minVelocity)
-		{
-			ship.velocity = ship.velocity.normalized * minVelocity;
-		}
-
-		ship.sprite.gameObject.transform.localPosition = ship.sprite.gameObject.transform.localPosition + ship.velocity * Time.fixedDeltaTime;
-
-
-		// fix rotation so we look the direction we're moving
-
-		float ang = Mathf.Atan2(ship.velocity.y, ship.velocity.x);
-		ship.sprite.gameObject.transform.localEulerAngles = new Vector3 (0, 0, ang * 57.29577951f);
 	}
 }
 
