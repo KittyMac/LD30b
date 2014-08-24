@@ -19,6 +19,10 @@ public class GameController : MonoBehaviour, IPUCode {
 	public PULabel redPlanetBuildTime;
 	public PULabel bluePlanetBuildTime;
 
+	public PULabel redPlanetBuildQueue;
+	public PULabel bluePlanetBuildQueue;
+
+	public PULabel bluePlanetBuildQueueEstimatedTime;
 
 
 
@@ -57,6 +61,18 @@ public class GameController : MonoBehaviour, IPUCode {
 				if(pos.y > 180 && pos.x > 888){
 					// We dropped an equipment; is it in our build queue list?
 					game.AddEquipmentToPlanetBuildQueue (mousedEquipment, game.bluePlanet ());
+
+					// Add a left hanging label to the equipment sprite
+					PULabel equipmentLabel = new PULabel ("PlanetUnity/Label", null, 9, PlanetUnity.LabelAlignment.right, new cColor (172.0f/255.0f,172.0f/255.0f,172.0f/255.0f,1.0f), 
+						mousedEquipment.name, null, null, new cRect (0, 0, 0, 0));
+					equipmentLabel.renderQueueOffset = 1000;
+					equipmentLabel.fontExists = false;
+					equipmentLabel.shadowColorExists = false;
+					equipmentLabel.shadowOffsetExists = false;
+					equipmentLabel.loadIntoGameObject (mousedEquipment.sprite.gameObject);
+
+					equipmentLabel.gameObject.transform.localPosition = new Vector3 (-0.3f, 0.45f, 0.0f);
+					equipmentLabel.gameObject.transform.localScale = new Vector3 (1.0f / 32.0f, 1.0f / 32.0f, 1.0f);
 				}
 			}
 
@@ -127,6 +143,15 @@ public class GameController : MonoBehaviour, IPUCode {
 		// update buildtime displays
 		redPlanetBuildTime.LoadTextString (game.redPlanet().buildTimeAsString());
 		bluePlanetBuildTime.LoadTextString (game.bluePlanet().buildTimeAsString());
+
+		// update buildqueue display
+		redPlanetBuildQueue.LoadTextString (game.redPlanet().buildQueueAsString());
+		bluePlanetBuildQueue.LoadTextString (game.bluePlanet().buildQueueAsString());
+
+		if (bluePlanetBuildQueueEstimatedTime.LoadTextString (game.bluePlanet ().estimatedBuildTimeAsString ())) {
+			bluePlanetBuildQueueEstimatedTime.gameObject.transform.localScale = new Vector3 (2, 2, 1);
+			LeanTween.scale (bluePlanetBuildQueueEstimatedTime.gameObject, new Vector3 (1.0f, 1.0f, 1.0f), 0.5f);
+		}
 
 	}
 

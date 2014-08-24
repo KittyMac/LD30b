@@ -16,6 +16,22 @@ public partial class LDGPlanet : LDGPlanetBase {
 		return string.Format("{0:0.0}s", buildTime);
 	}
 
+	public string buildQueueAsString() {
+		if(Ships.Count == 0){
+			return "No Ships To Build";
+		}
+
+		if(Ships.Count == 1){
+			return "Building 1 Ship";
+		}
+
+		return string.Format("Building {0} Ships", Ships.Count);
+	}
+
+	public string estimatedBuildTimeAsString()
+	{
+		return string.Format("{0:0}s", LDGShip.buildTimeForEquipment (Equipments));
+	}
 
 
 	public void AdvanceBuildQueue (PUGameObject shipsContainer) {
@@ -38,6 +54,11 @@ public partial class LDGPlanet : LDGPlanetBase {
 				}
 
 				Ships.Remove (shipToProduce);
+
+				if (Ships.Count > 0) {
+					LDGShip ship = Ships [0] as LDGShip;
+					buildTime = ship.buildTime ();
+				}
 			}
 		}
 	}

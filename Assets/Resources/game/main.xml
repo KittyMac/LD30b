@@ -7,15 +7,19 @@
 	<Sprite title="redPlanet" position="40,40,0" scale="50" resourcePath="game/redPlanet" />
 	<Label title="redPlanetHealth" bounds="17,56,73,28" value="--" textColor="#FFFFFFFF" fontSize="28" />
 	<Label title="redPlanetBuildTime" bounds="44,28,62,19" value="--" textColor="#FFFFFFFF" fontSize="18" />
+	<Label title="redPlanetBuildQueue" bounds="1,5,109,18" value="--" textColor="#FFFFFFFF" fontSize="12" />
 	
 	<Sprite title="bluePlanet" position="@eval(960-40,600-40,0)" scale="50" resourcePath="game/bluePlanet" />
 	<Label title="bluePlanetHealth" bounds="854,513,73,28" value="--" textColor="#FFFFFFFF" fontSize="28" />
 	<Label title="bluePlanetBuildTime" bounds="832,549,63,19" value="--" textColor="#FFFFFFFF" fontSize="18" />
+	<Label title="bluePlanetBuildQueue" bounds="843,576,109,18" value="--" textColor="#FFFFFFFF" fontSize="12" />
 
 	<Image bounds="@eval(888,0,72,421)" resourcePath="game/build_queue" />
 	<Image bounds="@eval(0+36,179-210,72,421)" resourcePath="game/build_queue" anchor="0.5,0.5" rotation="0,0,180" />
 	
 	<ImageButton bounds="884,432,76,22" normalResourcePath="game/build_btn" touchColor="#9999FFFF" onTouchUp="BuildShip" />
+	
+	<Label title="bluePlanetBuildQueueEstimatedTime" bounds="885,409,75,22" value="--" textColor="#FFFFFFFF" fontSize="18" />
 	
 	<GameObject title="EquipmentContainer" />
 	<GameObject title="ShipsContainer" />

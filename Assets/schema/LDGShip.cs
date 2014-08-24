@@ -1,18 +1,23 @@
 
 using UnityEngine;
 using System.IO;
+using System.Collections.Generic;
 
 public partial class LDGShip : LDGShipBase {
 
 	public PUSprite sprite;
 	public Vector3 velocity;
 
-	public float buildTime(){
+	public static float buildTimeForEquipment(List<object> Equipments){
 		float bt = 0;
 		foreach (LDGEquipment e in Equipments) {
 			bt += 2;
 		}
 		return bt;
+	}
+
+	public float buildTime(){
+		return buildTimeForEquipment(Equipments);
 	}
 
 	public void InitCombatValues() {
