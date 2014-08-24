@@ -1,13 +1,11 @@
 using UnityEngine;
-using System.IO;
-using System.Runtime.Remoting.Messaging;
-using System.Runtime.InteropServices;
 using System.Threading;
 
 public class GameAI : Object {
 
 	private LDGGame game;
 
+	static public float difficulty = 0.75f;
 
 	public void PerformAIOnThread() {
 
@@ -31,27 +29,50 @@ public class GameAI : Object {
 
 			if(numberOfEquipmentNeeded > 0 && game.Equipments.Count > 0){
 
-				// TODO: Pick beter things than random equipment
-				int n = game.Equipments.Count;
-				int j = random.Next () % n;
-	
-				LDGEquipment e = game.Equipments [j] as LDGEquipment;
-
 				PlanetUnityGameObject.ScheduleTask (new Task (() => {
-					game.AddEquipmentToPlanetBuildQueue(e, game.redPlanet());
+
+					int n = game.Equipments.Count;
+					LDGEquipment bestEquipment = null;
+
+					foreach (LDGEquipment e in game.Equipments) {
+						if (bestEquipment == null || e.aiValue () > bestEquipment.aiValue ()) {
+							bestEquipment = e;
+						}
+					}
+
+					//if (bestEquipment != null) {
+					//	Debug.Log ("AI chose: " + bestEquipment.name );
+					//}
+
+					if (bestEquipment != null && bestEquipment.beingDragged == false) {
+						game.AddEquipmentToPlanetBuildQueue (bestEquipment, game.redPlanet ());
+					}
 				}));
 
 				// need to pause to give the user a chance, you know?
-				Thread.Sleep (2000);
+				int waitTime = (int)(game.averageUserDecisionTime * difficulty);
+
+				if (waitTime > 2000) {
+					waitTime = 2000;
+				}
+				if (waitTime < 500) {
+					waitTime = 500;
+				}
+				waitTime += random.Next () % 500;
+
+				Thread.Sleep (waitTime);
+
 				continue;
 			}
 
 			// 3) When you have enough equipment, press the non-existant "build" button
 			if (numberOfEquipmentNeeded <= 0) {
 				PlanetUnityGameObject.ScheduleTask (new Task (() => {
-					game.BuildCurrentShipForPlanet (game.redPlanet ());
+					if(game.redPlanet ().Equipments.Count >= idealNumberOfEquipments) {
+						game.BuildCurrentShipForPlanet (game.redPlanet ());
+					}
 				}));
-				Thread.Sleep (1000);
+				Thread.Sleep (500);
 				continue;
 			}
 		}
@@ -63,9 +84,8 @@ public class GameAI : Object {
 
 		game = _game;
 
-		Thread processingThread = new Thread (PerformAIOnThread);
-		processingThread.Start ();
-
+		Thread processingThread1 = new Thread (PerformAIOnThread);
+		processingThread1.Start ();
 	}
 }
 

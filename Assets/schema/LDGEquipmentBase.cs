@@ -28,6 +28,7 @@ public partial class LDGEquipment : LDGEquipmentBase {
 			float dmgStructure,
 			float dmgShields,
 			float dmgArmor,
+			float dmgPlanet,
 			float range,
 			float spread,
 			float reload,
@@ -43,7 +44,8 @@ public partial class LDGEquipment : LDGEquipmentBase {
 			int time,
 			cVector3 position,
 			cVector3 velocity,
-			cVector3 rotation ) : this()
+			cVector3 rotation,
+			bool beingDragged ) : this()
 	{
 		this.dmgStructure = dmgStructure;
 		this.dmgStructureExists = true;
@@ -53,6 +55,9 @@ public partial class LDGEquipment : LDGEquipmentBase {
 
 		this.dmgArmor = dmgArmor;
 		this.dmgArmorExists = true;
+
+		this.dmgPlanet = dmgPlanet;
+		this.dmgPlanetExists = true;
 
 		this.range = range;
 		this.rangeExists = true;
@@ -101,6 +106,9 @@ public partial class LDGEquipment : LDGEquipmentBase {
 
 		this.rotation = rotation;
 		this.rotationExists = true;
+
+		this.beingDragged = beingDragged;
+		this.beingDraggedExists = true;
 	}
 
 	
@@ -130,6 +138,9 @@ public class LDGEquipmentBase : ILD30Game {
 
 	public float dmgArmor;
 	public bool dmgArmorExists;
+
+	public float dmgPlanet;
+	public bool dmgPlanetExists;
 
 	public float range;
 	public bool rangeExists;
@@ -179,6 +190,9 @@ public class LDGEquipmentBase : ILD30Game {
 	public cVector3 rotation;
 	public bool rotationExists;
 
+	public bool beingDragged;
+	public bool beingDraggedExists;
+
 
 
 
@@ -186,6 +200,7 @@ public class LDGEquipmentBase : ILD30Game {
 	public void SetDmgStructure(float v) { dmgStructure = v; dmgStructureExists = true; } 
 	public void SetDmgShields(float v) { dmgShields = v; dmgShieldsExists = true; } 
 	public void SetDmgArmor(float v) { dmgArmor = v; dmgArmorExists = true; } 
+	public void SetDmgPlanet(float v) { dmgPlanet = v; dmgPlanetExists = true; } 
 	public void SetRange(float v) { range = v; rangeExists = true; } 
 	public void SetSpread(float v) { spread = v; spreadExists = true; } 
 	public void SetReload(float v) { reload = v; reloadExists = true; } 
@@ -202,6 +217,7 @@ public class LDGEquipmentBase : ILD30Game {
 	public void SetPosition(cVector3 v) { position = v; positionExists = true; } 
 	public void SetVelocity(cVector3 v) { velocity = v; velocityExists = true; } 
 	public void SetRotation(cVector3 v) { rotation = v; rotationExists = true; } 
+	public void SetBeingDragged(bool v) { beingDragged = v; beingDraggedExists = true; } 
 
 
 	public virtual void gaxb_unload()
@@ -285,6 +301,10 @@ public class LDGEquipmentBase : ILD30Game {
 		if(attr != null && planetOverride != null) { attr = processStringMethod.Invoke(null, new [] {_parent, attr}).ToString(); }
 		if(attr != null) { dmgArmor = float.Parse(attr); dmgArmorExists = true; } 
 		
+		attr = reader.GetAttribute("dmgPlanet");
+		if(attr != null && planetOverride != null) { attr = processStringMethod.Invoke(null, new [] {_parent, attr}).ToString(); }
+		if(attr != null) { dmgPlanet = float.Parse(attr); dmgPlanetExists = true; } 
+		
 		attr = reader.GetAttribute("range");
 		if(attr != null && planetOverride != null) { attr = processStringMethod.Invoke(null, new [] {_parent, attr}).ToString(); }
 		if(attr != null) { range = float.Parse(attr); rangeExists = true; } 
@@ -350,6 +370,10 @@ public class LDGEquipmentBase : ILD30Game {
 		if(attr != null && planetOverride != null) { attr = processStringMethod.Invoke(null, new [] {_parent, attr}).ToString(); }
 		if(attr != null) { rotation = attr; rotationExists = true; } 
 		
+		attr = reader.GetAttribute("beingDragged");
+		if(attr != null && planetOverride != null) { attr = processStringMethod.Invoke(null, new [] {_parent, attr}).ToString(); }
+		if(attr != null) { beingDragged = bool.Parse(attr); beingDraggedExists = true; } 
+		
 
 	}
 	
@@ -365,6 +389,7 @@ public class LDGEquipmentBase : ILD30Game {
 		if(dmgStructureExists) { sb.AppendFormat (" {0}=\"{1}\"", "dmgStructure", dmgStructure.ToString ("0.##")); }
 		if(dmgShieldsExists) { sb.AppendFormat (" {0}=\"{1}\"", "dmgShields", dmgShields.ToString ("0.##")); }
 		if(dmgArmorExists) { sb.AppendFormat (" {0}=\"{1}\"", "dmgArmor", dmgArmor.ToString ("0.##")); }
+		if(dmgPlanetExists) { sb.AppendFormat (" {0}=\"{1}\"", "dmgPlanet", dmgPlanet.ToString ("0.##")); }
 		if(rangeExists) { sb.AppendFormat (" {0}=\"{1}\"", "range", range.ToString ("0.##")); }
 		if(spreadExists) { sb.AppendFormat (" {0}=\"{1}\"", "spread", spread.ToString ("0.##")); }
 		if(reloadExists) { sb.AppendFormat (" {0}=\"{1}\"", "reload", reload.ToString ("0.##")); }
@@ -381,6 +406,7 @@ public class LDGEquipmentBase : ILD30Game {
 		if(positionExists) { sb.AppendFormat (" {0}=\"{1}\"", "position", position); }
 		if(velocityExists) { sb.AppendFormat (" {0}=\"{1}\"", "velocity", velocity); }
 		if(rotationExists) { sb.AppendFormat (" {0}=\"{1}\"", "rotation", rotation); }
+		if(beingDraggedExists) { sb.AppendFormat (" {0}=\"{1}\"", "beingDragged", beingDragged.ToString().ToLower()); }
 
 	}
 	

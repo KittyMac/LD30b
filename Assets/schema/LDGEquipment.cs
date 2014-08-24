@@ -22,12 +22,15 @@ public partial class LDGEquipment : LDGEquipmentBase {
 		return sprite;
 	}
 
-	public void RemoveSprite(float anim, Vector3 exitPos)
-	{
+	public void RemoveSprite(float anim, Vector3 exitPos) {
 		LeanTween.moveLocal (sprite.gameObject, exitPos, 0.8f).setDelay(anim).setOnComplete (() => {
 			sprite.unload ();
 			sprite = null;
 		});
+	}
+
+	public float aiValue() {
+		return ((dmgArmor + dmgShields + dmgStructure + dmgPlanet) / 4) + (armor + structure + shields) / 20;
 	}
 
 }

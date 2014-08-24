@@ -5,6 +5,10 @@ using System.Runtime.InteropServices;
 
 public class GameController : MonoBehaviour, IPUCode {
 
+	private static GameController singleton;
+
+	public GameObject WeaponFlashParticles;
+
 	public PUGameObject EquipmentContainer;
 	public PUGameObject ShipsContainer;
 	public LDGGame game = null;
@@ -12,6 +16,9 @@ public class GameController : MonoBehaviour, IPUCode {
 	public PULabel EquipmentLabel;
 	public PUColor EquipmentLabelColor;
 	public PUGameObject EquipmentLabelGO;
+
+	public PUSprite redPlanet;
+	public PUSprite bluePlanet;
 
 	public PULabel redPlanetHealth;
 	public PULabel bluePlanetHealth;
@@ -28,7 +35,36 @@ public class GameController : MonoBehaviour, IPUCode {
 
 	protected LDGEquipment mousedEquipment = null;
 
+
+
+	public static void PerformWeaponEffect(LDGEquipment e, LDGShip fromShip, LDGShip toShip){
+
+		if (e.name.Contains ("Laser")) {
+			SoundController controller = PUCode.GetSingletonByName ("SoundController") as SoundController;
+			controller.Play (controller.laserFire);
+		}
+
+		ParticleSystem particleSystem = singleton.WeaponFlashParticles.GetComponent<ParticleSystem> ();
+		particleSystem.transform.localPosition = toShip.sprite.gameObject.transform.localPosition;
+		particleSystem.Emit (1);
+	}
+
+	public static void PerformWeaponEffect(LDGEquipment e, LDGShip fromShip, LDGPlanet toPlanet){
+	
+		SoundController controller = PUCode.GetSingletonByName ("SoundController") as SoundController;
+		controller.Play (controller.bombHittingPlanet);
+
+		ParticleSystem particleSystem = singleton.WeaponFlashParticles.GetComponent<ParticleSystem> ();
+		particleSystem.transform.localPosition = toPlanet.sprite.gameObject.transform.localPosition;
+		particleSystem.Emit (1);
+	}
+
+
 	public void Start() {
+
+		singleton = this;
+
+		WeaponFlashParticles.gameObject.layer = PlanetUnityOverride.puCameraLayer;
 
 		if (game == null) {
 			game = LDGGame.CreateGame ();
@@ -40,13 +76,41 @@ public class GameController : MonoBehaviour, IPUCode {
 			equipment.GetSprite (EquipmentContainer);
 		}
 
+		game.bluePlanet ().sprite = bluePlanet;
+		game.redPlanet ().sprite = redPlanet;
+
+
 		// Boot up the AI
 		gameAI = new GameAI ();
 		gameAI.BeginAIForGame (game);
 	}
 
 	public void BuildShip() {
-		game.BuildCurrentShipForPlanet (game.bluePlanet());
+		if (game.BuildCurrentShipForPlanet (game.bluePlanet ())) {
+			SoundController controller = PUCode.GetSingletonByName ("SoundController") as SoundController;
+			controller.Play (controller.buildButton);
+		}
+	}
+
+
+	public void AddEquipment(LDGEquipment e)
+	{
+		if (game.AddEquipmentToPlanetBuildQueue (e, game.bluePlanet ())) {
+			SoundController controller = PUCode.GetSingletonByName ("SoundController") as SoundController;
+			controller.Play (controller.addedEquipment);
+
+			// Add a left hanging label to the equipment sprite
+			PULabel equipmentLabel = new PULabel ("PlanetUnity/Label", null, 9, PlanetUnity.LabelAlignment.right, new cColor (172.0f/255.0f,172.0f/255.0f,172.0f/255.0f,1.0f), 
+				e.name, null, null, new cRect (0, 0, 0, 0));
+			equipmentLabel.renderQueueOffset = 1000;
+			equipmentLabel.fontExists = false;
+			equipmentLabel.shadowColorExists = false;
+			equipmentLabel.shadowOffsetExists = false;
+			equipmentLabel.loadIntoGameObject (e.sprite.gameObject);
+
+			equipmentLabel.gameObject.transform.localPosition = new Vector3 (-0.3f, 0.45f, 0.0f);
+			equipmentLabel.gameObject.transform.localScale = new Vector3 (1.0f / 32.0f, 1.0f / 32.0f, 1.0f);
+		}
 	}
 
 	public void FixedUpdate() {
@@ -57,27 +121,19 @@ public class GameController : MonoBehaviour, IPUCode {
 		// 1) if its under a certain delta scale up the equipment so its easier to see, and show the label for
 		//    what it is.
 		if (Input.GetMouseButton (0) == false) {
-
+		
 			if (mousedEquipment != null) {
-
 				Vector3 pos = mousedEquipment.sprite.gameObject.transform.localPosition;
 
 				if(pos.y > 180 && pos.x > 888){
 					// We dropped an equipment; is it in our build queue list?
-					game.AddEquipmentToPlanetBuildQueue (mousedEquipment, game.bluePlanet ());
-
-					// Add a left hanging label to the equipment sprite
-					PULabel equipmentLabel = new PULabel ("PlanetUnity/Label", null, 9, PlanetUnity.LabelAlignment.right, new cColor (172.0f/255.0f,172.0f/255.0f,172.0f/255.0f,1.0f), 
-						mousedEquipment.name, null, null, new cRect (0, 0, 0, 0));
-					equipmentLabel.renderQueueOffset = 1000;
-					equipmentLabel.fontExists = false;
-					equipmentLabel.shadowColorExists = false;
-					equipmentLabel.shadowOffsetExists = false;
-					equipmentLabel.loadIntoGameObject (mousedEquipment.sprite.gameObject);
-
-					equipmentLabel.gameObject.transform.localPosition = new Vector3 (-0.3f, 0.45f, 0.0f);
-					equipmentLabel.gameObject.transform.localScale = new Vector3 (1.0f / 32.0f, 1.0f / 32.0f, 1.0f);
+					AddEquipment (mousedEquipment);
 				}
+				else if(Input.GetMouseButtonUp(0) == true){
+					AddEquipment (mousedEquipment);
+				}
+
+				mousedEquipment.beingDragged = false;
 			}
 
 
@@ -119,7 +175,6 @@ public class GameController : MonoBehaviour, IPUCode {
 		if (mousedEquipment == null && EquipmentLabelGO.gameObject.activeSelf == true) {
 			EquipmentLabelGO.gameObject.SetActive (false);
 		} else if(mousedEquipment != null) {
-
 			EquipmentLabelGO.gameObject.SetActive (true);
 			EquipmentLabel.LoadTextString (mousedEquipment.name);
 
@@ -174,6 +229,7 @@ public class GameController : MonoBehaviour, IPUCode {
 
 			// User is dragging an equipment pod
 			if (Input.GetMouseButton (0)) {
+				mousedEquipment.beingDragged = true;
 				e.sprite.gameObject.transform.localPosition = mousePos;
 			}
 		} else {

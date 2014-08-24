@@ -6,8 +6,11 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using System.Diagnostics;
 
 public partial class LDGGame : LDGGameBase {
+
+	public float averageUserDecisionTime = 4000;
 
 	public static LDGGame CreateGame() {
 		LDGGame game = new LDGGame();
@@ -42,6 +45,9 @@ public partial class LDGGame : LDGGameBase {
 		return game;
 	}
 
+
+	protected Stopwatch playerFindWatch = null;
+
 	public void AddSpaceEquipment(LDGEquipment equipment) {
 		LDGEquipment clone = equipment.Clone ();
 		clone.position = new cVector3 (UnityEngine.Random.Range (96, 750), UnityEngine.Random.Range (38, 532), 0);
@@ -65,20 +71,34 @@ public partial class LDGGame : LDGGameBase {
 			return false;
 		}
 
+		if (p == bluePlanet ()) {
+			playerFindWatch.Stop ();
+			averageUserDecisionTime = (averageUserDecisionTime + (float)playerFindWatch.Elapsed.TotalMilliseconds) / 2.0f;
+			playerFindWatch.Reset ();
+			playerFindWatch.Start ();
+		}
+
 		// 0 remove the equipment from space
 		Equipments.Remove (e);
 
 		// 1 add it to the planet
 		p.Equipments.Add (e);
 
+		if (p == redPlanet ()) {
+			e.sprite.spriteRenderer.color = new Color (1.0f, 0.5f, 0.5f, 1.0f);
+		} else {
+			e.sprite.spriteRenderer.color = new Color (0.5f, 0.5f, 1.0f, 1.0f);
+		}
+		e.beingDragged = false;
+
 		return true;
 	}
 
-	public void BuildCurrentShipForPlanet(LDGPlanet p) {
+	public bool BuildCurrentShipForPlanet(LDGPlanet p) {
 
 		// Not allowed to build empty ships
 		if (p.Equipments.Count == 0) {
-			return;
+			return false;
 		}
 
 		LDGShip ship = new LDGShip();
@@ -103,9 +123,16 @@ public partial class LDGGame : LDGGameBase {
 		}
 
 		p.AddShipToBuild (ship);
+
+		return true;
 	}
 
 	public void AdvanceGame (PUGameObject ShipsContainer, PUGameObject EquipmentContainer){
+
+		if (playerFindWatch == null) {
+			playerFindWatch = Stopwatch.StartNew ();
+		}
+
 		foreach (LDGPlanet p in Planets) {
 			p.AdvanceBuildQueue (ShipsContainer);
 		}
@@ -140,13 +167,18 @@ public partial class LDGGame : LDGGameBase {
 
 				ship.sprite.unload ();
 				Ships.Remove (ship);
+
+				SoundController controller = PUCode.GetSingletonByName ("SoundController") as SoundController;
+				controller.Play (controller.weaponsFire);
 			}
 		}
 
 		// Wrap all sprite positions
 		foreach(LDGEquipment e in Equipments)
 		{
-			WrapSpriteIfNecessary (e.sprite);
+			if (e.beingDragged == false) {
+				WrapSpriteIfNecessary (e.sprite);
+			}
 		}
 		foreach(LDGShip ship in Ships)
 		{
@@ -174,6 +206,15 @@ public partial class LDGGame : LDGGameBase {
 			targetPosition = targetShip.sprite.gameObject.transform.localPosition;
 		}
 
+		// We need to focus the other player's planet
+		if (targetShip == null) {
+			if (p == 0) {
+				targetPosition = redPlanet ().sprite.gameObject.transform.localPosition;
+			} else {
+				targetPosition = bluePlanet ().sprite.gameObject.transform.localPosition;
+			}
+		}
+
 		foreach (LDGShip ship in Ships) {
 			if (ship.player == p) {
 
@@ -184,7 +225,14 @@ public partial class LDGGame : LDGGameBase {
 				float rightRot = ship.sprite.gameObject.transform.localEulerAngles.z - ship.TurnRate();
 
 
-				Vector3 vector = new Vector3(ship.MaxVelocity() * Time.fixedDeltaTime, 0.0f, 0.0f);
+				float vel = ship.MaxVelocity ();
+				if (targetShip == null) {
+					if( Vector3.Distance(ship.sprite.gameObject.transform.localPosition, targetPosition) < 100.0f){
+						vel /= 3.0f;
+					}
+				}
+
+				Vector3 vector = new Vector3(vel * Time.fixedDeltaTime, 0.0f, 0.0f);
 				Vector3 currentPos = ship.sprite.gameObject.transform.localPosition;
 				Vector3 rightPos = currentPos + RotateZ(rightRot, vector);
 				Vector3 leftPos = currentPos + RotateZ(leftRot, vector);
@@ -207,7 +255,12 @@ public partial class LDGGame : LDGGameBase {
 
 
 				if (targetShip != null) {
-					FireAllAvailableWeapons (ship, targetShip);
+					if (!FireAllAvailableWeapons (ship, targetShip)) {
+						FireAllAvailableWeaponsAtPlanet (ship);
+					}
+				} else {
+					// if we have no target, are we in range to shoot the planet of the enemy?
+					FireAllAvailableWeaponsAtPlanet (ship);
 				}
 			}
 		}
@@ -240,19 +293,71 @@ public partial class LDGGame : LDGGameBase {
 		sprite.gameObject.transform.localPosition = pos;
 	}
 
-	public void FireAllAvailableWeapons(LDGShip fromShip, LDGShip toShip) {
+	public bool FireAllAvailableWeapons(LDGShip fromShip, LDGShip toShip) {
 		float d = Vector3.Distance(fromShip.sprite.gameObject.transform.localPosition, toShip.sprite.gameObject.transform.localPosition);
+		bool didFireWeapons = false;
 
 		foreach (LDGEquipment e in fromShip.Equipments) {
 			// Are we in range? (Are we even a weapon?)
-			if (e.range > 0 && e.range > d) {
+			if (e.range > 0) {
 
-				e.reloadCounter -= Time.deltaTime;
-				// Have I reloaded?
-				if (e.reloadCounter <= 0) {
-					// Fire my weapon, reset the reload counter
-					toShip.PerformDamageFromWeapon (e);
-					e.reloadCounter = e.reload;
+				if (e.range <= d) {
+					// hmm... our preferred target is not in range.  We should shoot someone else...
+					foreach (LDGShip ship in Ships) {
+						if (ship.player == toShip.player) {
+							float newD = Vector3.Distance(fromShip.sprite.gameObject.transform.localPosition, ship.sprite.gameObject.transform.localPosition);
+							if (e.range > newD) {
+								d = newD;
+								toShip = ship;
+								break;
+							}
+						}
+					}
+				}
+
+				if (e.range > d) {
+					e.reloadCounter -= Time.deltaTime;
+					// Have I reloaded?
+					if (e.reloadCounter <= 0) {
+						// Fire my weapon, reset the reload counter
+						toShip.PerformDamageFromWeapon (e);
+						e.reloadCounter = e.reload + UnityEngine.Random.Range(-0.5f, 0.5f);
+
+						if (didFireWeapons == false) {
+							GameController.PerformWeaponEffect (e, fromShip, toShip);
+						}
+
+						didFireWeapons = true;
+					}
+				}
+			}
+		}
+
+		return didFireWeapons;
+	}
+
+	public void FireAllAvailableWeaponsAtPlanet(LDGShip fromShip) {
+
+		LDGPlanet toPlanet = redPlanet ();
+		if (fromShip.player == 1) {
+			toPlanet = bluePlanet ();
+		}
+
+		float d = Vector3.Distance(fromShip.sprite.gameObject.transform.localPosition, toPlanet.sprite.gameObject.transform.localPosition);
+
+		foreach (LDGEquipment e in fromShip.Equipments) {
+			// Are we in range? (Are we even a weapon?)
+			if (e.range > 0) {
+				if (e.range > d) {
+					e.reloadCounter -= Time.deltaTime;
+					// Have I reloaded?
+					if (e.reloadCounter <= 0) {
+						// Fire my weapon, reset the reload counter
+						toPlanet.PerformDamageFromWeapon (e);
+						e.reloadCounter = e.reload;
+
+						GameController.PerformWeaponEffect (e, fromShip, toPlanet);
+					}
 				}
 			}
 		}

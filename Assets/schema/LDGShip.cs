@@ -64,6 +64,10 @@ public partial class LDGShip : LDGShipBase {
 			break;
 		}
 
+		foreach (LDGEquipment e in Equipments) {
+			baseV += e.speed;
+		}
+
 		return baseV;
 	}
 
@@ -80,6 +84,10 @@ public partial class LDGShip : LDGShipBase {
 		case 2:
 			baseV = 0.25f;
 			break;
+		}
+
+		foreach (LDGEquipment e in Equipments) {
+			baseV += e.turning;
 		}
 
 		return baseV;

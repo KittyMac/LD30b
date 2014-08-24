@@ -33,4 +33,6 @@
 		<Notification name="BuildShip" />
     </Code>
 
+    <Code class="SoundController" singleton="true" />
+
 </Scene>

@@ -8,6 +8,8 @@ using System.Net.Sockets;
 
 public partial class LDGPlanet : LDGPlanetBase {
 
+	public PUSprite sprite;
+
 	public string buildTimeAsString() {
 		if(Ships.Count == 0){
 			return "--";
@@ -33,6 +35,12 @@ public partial class LDGPlanet : LDGPlanetBase {
 		return string.Format("{0:0}s", LDGShip.buildTimeForEquipment (Equipments));
 	}
 
+	public void PerformDamageFromWeapon(LDGEquipment e){
+		if (health > 0) {
+			health -= e.dmgPlanet;
+			return;
+		}
+	}
 
 	public void AdvanceBuildQueue (PUGameObject shipsContainer) {
 		if (Ships.Count > 0) {
