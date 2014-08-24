@@ -9,7 +9,7 @@
 	<Equipment name="+Armor" icon="1" time="1" armor="50" />
 	<Equipment name="+Structure" icon="1" time="1" structure="50" />
 	
-	<Equipment name="+Speed" icon="0" time="1" speed="1" />
+	<Equipment name="+Speed" icon="0" time="1" speed="5" />
 	<Equipment name="+Turning" icon="0" time="1" turning="1" />
 		
 </AllEquipment>

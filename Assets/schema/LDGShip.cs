@@ -28,13 +28,13 @@ public partial class LDGShip : LDGShipBase {
 
 		switch (ShipSize ()) {
 		case 0:
-			structure = armor = 20;
+			structure = armor = 25;
 			break;
 		case 1:
-			structure = armor = 50;
+			structure = armor = 75;
 			break;
 		case 2:
-			structure = armor = 200;
+			structure = armor = 300;
 			break;
 		}
 

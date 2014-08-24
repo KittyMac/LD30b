@@ -5,7 +5,7 @@ public class GameAI : Object {
 
 	private LDGGame game;
 
-	static public float difficulty = 0.75f;
+	static public float difficulty = 1.05f;
 
 	private bool continueRunningThread = true;
 
@@ -25,20 +25,16 @@ public class GameAI : Object {
 			// 3) When you have enough equipment, press the non-existant "build" button
 
 
+			PlanetUnityGameObject.ScheduleTask (new Task (() => {
+
+				// 2) Nab equipment from the center and add it to the build queue
+				int idealNumberOfEquipments = 4;
+
+				int numberOfEquipmentNeeded = idealNumberOfEquipments - game.redPlanet ().Equipments.Count;
+
+				if (numberOfEquipmentNeeded > 0 && game.Equipments.Count > 0) {
 
 
-			// 2) Nab equipment from the center and add it to the build queue
-			int idealNumberOfEquipments = 4;
-
-
-
-
-
-			int numberOfEquipmentNeeded = idealNumberOfEquipments - game.redPlanet ().Equipments.Count;
-
-			if(numberOfEquipmentNeeded > 0 && game.Equipments.Count > 0){
-
-				PlanetUnityGameObject.ScheduleTask (new Task (() => {
 
 					int n = game.Equipments.Count;
 					LDGEquipment bestEquipment = null;
@@ -56,37 +52,30 @@ public class GameAI : Object {
 					if (bestEquipment != null && bestEquipment.beingDragged == false) {
 						game.AddEquipmentToPlanetBuildQueue (bestEquipment, game.redPlanet ());
 					}
-				}));
-
-				// need to pause to give the user a chance, you know?
-				int waitTime = (int)(game.averageUserDecisionTime * difficulty);
-
-				if (waitTime > 2000) {
-					waitTime = 2000;
 				}
-				if (waitTime < 100) {
-					waitTime = 100;
+
+				// 3) When you have enough equipment, press the non-existant "build" button
+				else if (numberOfEquipmentNeeded <= 0) {
+					PlanetUnityGameObject.ScheduleTask (new Task (() => {
+						if (game.redPlanet ().Equipments.Count >= idealNumberOfEquipments) {
+							game.BuildCurrentShipForPlanet (game.redPlanet ());
+						}
+					}));
 				}
-				waitTime += random.Next () % 200;
+			}));
 
-				Thread.Sleep (waitTime);
+			// need to pause to give the user a chance, you know?
+			int waitTime = (int)(game.averageUserDecisionTime * difficulty);
 
-				continue;
+			if (waitTime > 2000) {
+				waitTime = 2000;
 			}
-
-			// 3) When you have enough equipment, press the non-existant "build" button
-			if (numberOfEquipmentNeeded <= 0) {
-				PlanetUnityGameObject.ScheduleTask (new Task (() => {
-					if(game.redPlanet ().Equipments.Count >= idealNumberOfEquipments) {
-						game.BuildCurrentShipForPlanet (game.redPlanet ());
-					}
-				}));
-				Thread.Sleep (500);
-				continue;
+			if (waitTime < 100) {
+				waitTime = 100;
 			}
+			waitTime += random.Next () % 200;
 
-
-			Thread.Sleep (100);
+			Thread.Sleep (waitTime);
 		}
 
 

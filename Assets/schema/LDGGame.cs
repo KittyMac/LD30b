@@ -22,16 +22,19 @@ public partial class LDGGame : LDGGameBase {
 
 		// 1) put random copies of all equipment into game.Equipment (this is the stuff floating in space)
 		// 1a) Should at least be one of everything
-		foreach (LDGEquipment equipment in allEquipment) {
-			game.AddSpaceEquipment (equipment);
+		int copies = UnityEngine.Random.Range (6, 10);
+		for (int i = 0; i < copies; i++) {
+			foreach (LDGEquipment equipment in allEquipment) {
+				game.AddSpaceEquipment (equipment);
+			}
 		}
 
 		// 1b) Now add more random copies for fun
-		int copies = UnityEngine.Random.Range (allEquipment.Count * 3, allEquipment.Count * 6);
+		/*int copies = UnityEngine.Random.Range (allEquipment.Count * 3, allEquipment.Count * 6);
 		for (int i = 0; i < copies; i++) {
 			LDGEquipment equipment = allEquipment [UnityEngine.Random.Range (0, allEquipment.Count)];
 			game.AddSpaceEquipment (equipment);
-		}
+		}*/
 
 
 		// 2) add the planets
