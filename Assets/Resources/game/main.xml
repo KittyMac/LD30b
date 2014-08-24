@@ -33,6 +33,7 @@
 			
     <Code class="GameController">
 		<Notification name="BuildShip" />
+		<Notification name="ReloadGame" />
     </Code>
 
     <Code class="SoundController" singleton="true" />

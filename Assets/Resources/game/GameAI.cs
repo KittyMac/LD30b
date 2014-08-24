@@ -7,6 +7,8 @@ public class GameAI : Object {
 
 	static public float difficulty = 0.75f;
 
+	private Thread processingThread1;
+
 	public void PerformAIOnThread() {
 
 		System.Random random = new System.Random ();
@@ -89,8 +91,12 @@ public class GameAI : Object {
 
 		game = _game;
 
-		Thread processingThread1 = new Thread (PerformAIOnThread);
+		processingThread1 = new Thread (PerformAIOnThread);
 		processingThread1.Start ();
+	}
+
+	public void Abort(){
+		processingThread1.Abort ();
 	}
 }
 

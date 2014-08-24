@@ -354,7 +354,7 @@ public partial class LDGGame : LDGGameBase {
 					if (e.reloadCounter <= 0) {
 						// Fire my weapon, reset the reload counter
 						toPlanet.PerformDamageFromWeapon (e);
-						e.reloadCounter = e.reload;
+						e.reloadCounter = e.reload + UnityEngine.Random.Range(-0.5f, 0.5f);
 
 						GameController.PerformWeaponEffect (e, fromShip, toPlanet);
 					}

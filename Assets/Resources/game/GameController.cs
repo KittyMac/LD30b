@@ -9,6 +9,8 @@ public class GameController : MonoBehaviour, IPUCode {
 
 	public GameObject WeaponFlashParticles;
 
+	protected PUImageButton endgameScreen;
+
 	public PUGameObject EquipmentContainer;
 	public PUGameObject ShipsContainer;
 	public LDGGame game = null;
@@ -83,6 +85,11 @@ public class GameController : MonoBehaviour, IPUCode {
 		// Boot up the AI
 		gameAI = new GameAI ();
 		gameAI.BeginAIForGame (game);
+	}
+
+	public void ReloadGame(){
+		gameAI.Abort ();
+		Application.LoadLevel ("game");
 	}
 
 	public void BuildShip() {
@@ -212,6 +219,18 @@ public class GameController : MonoBehaviour, IPUCode {
 			LeanTween.scale (bluePlanetBuildQueueEstimatedTime.gameObject, new Vector3 (1.0f, 1.0f, 1.0f), 0.5f);
 		}
 
+		if (endgameScreen == null) {
+			if (game.bluePlanet ().health <= 0 || game.redPlanet ().health <= 0) {
+				string imagePath = "game/victory";
+				if (game.bluePlanet ().health <= 0) {
+					imagePath = "game/defeat";
+				}
+
+				endgameScreen = new PUImageButton (imagePath, imagePath, new cColor (1, 1, 1, 1), 
+					new cVector2 (960, 600), "ReloadGame", "Nothing", null, new cRect (0, 0, 960, 600));
+				endgameScreen.loadIntoPUGameObject (ShipsContainer.scope () as PUGameObject);
+			}
+		}
 	}
 
 	public void UpdateSpaceEquipment(LDGEquipment e)
