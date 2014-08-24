@@ -5,6 +5,7 @@ using System.IO;
 public partial class LDGShip : LDGShipBase {
 
 	public PUSprite sprite;
+	public Vector3 velocity;
 
 	public float buildTime(){
 		float bt = 0;
@@ -25,6 +26,24 @@ public partial class LDGShip : LDGShipBase {
 			armor += e.armor;
 			shields += e.shields;
 		}
+	}
+
+	public float MaxVelocity() {
+		float baseV = 5.0f;
+
+		switch (ShipSize ()) {
+		case 0:
+			baseV = 50.0f;
+			break;
+		case 1:
+			baseV = 20.5f;
+			break;
+		case 2:
+			baseV = 10.0f;
+			break;
+		}
+
+		return baseV;
 	}
 
 	public int ShipSize()

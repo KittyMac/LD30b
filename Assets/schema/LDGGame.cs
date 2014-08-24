@@ -102,5 +102,72 @@ public partial class LDGGame : LDGGameBase {
 		foreach (LDGPlanet p in Planets) {
 			p.AdvanceBuildQueue (ShipsContainer);
 		}
+
+		PerformShipMovementForPlayer(0);
+		PerformShipMovementForPlayer(1);
+	}
+
+	// We going to do a generic flocking algorithm for the ships, always targetting weakest
+	public void PerformShipMovementForPlayer(int p){
+		// Figure out the flock center and the flock velocity
+
+		Vector3 center = Vector3.zero;
+		Vector3 velocity = Vector3.zero;
+		float n = 0;
+
+		foreach (LDGShip ship in Ships)
+		{
+			center = center + ship.sprite.gameObject.transform.localPosition;
+			velocity = velocity + ship.velocity;
+			n++;
+		}
+
+		center = center / n;
+		velocity = velocity / n;
+
+		Vector3 targetPosition = new Vector3 (280, 435, 0);
+
+		foreach (LDGShip ship in Ships) {
+			PerformFlocking (ship, center, velocity, targetPosition);
+		}
+	}
+
+	public void PerformFlocking(LDGShip ship, Vector3 flockCenter, Vector3 flockVelocity, Vector3 targetPosition) {
+
+		float maxVelocity = ship.MaxVelocity ();
+		float minVelocity = 0.5f;
+		float randomness = 2.0f;
+
+
+		Vector3 randomize = new Vector3 ((UnityEngine.Random.value *2) -1, (UnityEngine.Random.value * 2) -1, (UnityEngine.Random.value * 2) -1);
+		randomize.Normalize();
+		flockCenter = flockCenter - ship.sprite.gameObject.transform.localPosition;
+		flockVelocity = flockVelocity - ship.velocity;
+		targetPosition = targetPosition - ship.sprite.gameObject.transform.localPosition;
+		Vector3 calc = (flockCenter + flockVelocity + targetPosition * 2 + randomize * randomness);
+
+
+
+		ship.velocity = ship.velocity + calc * Time.deltaTime;
+
+		// enforce minimum and maximum speeds for the boids
+		float speed = ship.velocity.magnitude;
+		if (speed > maxVelocity)
+		{
+			ship.velocity = ship.velocity.normalized * maxVelocity;
+		}
+		else if (speed < minVelocity)
+		{
+			ship.velocity = ship.velocity.normalized * minVelocity;
+		}
+
+		ship.sprite.gameObject.transform.localPosition = ship.sprite.gameObject.transform.localPosition + (ship.velocity * Time.deltaTime);
+
+
+		// fix rotation so we look the direction we're moving
+
+		float ang = Mathf.Atan2(ship.velocity.y, ship.velocity.x);
+		ship.sprite.gameObject.transform.localEulerAngles = new Vector3 (0, 0, ang * 57.29577951f);
 	}
 }
+
