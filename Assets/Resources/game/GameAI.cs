@@ -7,6 +7,8 @@ public class GameAI : Object {
 
 	static public float difficulty = 0.75f;
 
+	private bool continueRunningThread = true;
+
 	private Thread processingThread1;
 
 	public void PerformAIOnThread() {
@@ -15,7 +17,7 @@ public class GameAI : Object {
 
 		Thread.Sleep (4000);
 
-		while(true){
+		while(continueRunningThread){
 
 			// AI TASKS:
 			// 1) Determine what kind of ship we need (quick to build, or do we have luxury of time?
@@ -82,6 +84,9 @@ public class GameAI : Object {
 				Thread.Sleep (500);
 				continue;
 			}
+
+
+			Thread.Sleep (100);
 		}
 
 
@@ -96,7 +101,9 @@ public class GameAI : Object {
 	}
 
 	public void Abort(){
-		processingThread1.Abort ();
+
+		continueRunningThread = false;
+		processingThread1.Join ();
 	}
 }
 
