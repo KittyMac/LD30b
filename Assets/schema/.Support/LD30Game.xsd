@@ -103,7 +103,11 @@
 		<attribute name="dmgStructure" type="float" />
 		<attribute name="dmgShields" type="float" />
 		<attribute name="dmgArmor" type="float" />
+		<attribute name="range" type="float" />
 		<attribute name="spread" type="float" />
+		<attribute name="reload" type="float" default="1" />
+		<attribute name="reloadCounter" type="float" />
+		
 		
 		<attribute name="armor" type="float" />
 		<attribute name="structure" type="float" />
@@ -119,7 +123,9 @@
 		<attribute name="time" type="int" />
 		
 		<attribute name="position" type="LD30Game:vec3" />
+		<attribute name="velocity" type="LD30Game:vec3" />
 		<attribute name="rotation" type="LD30Game:vec3" />
+		
 	</complexType>
 	
 	<element name="AllEquipment">

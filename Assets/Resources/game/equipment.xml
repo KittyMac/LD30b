@@ -2,9 +2,9 @@
 
 <AllEquipment xmlns="http://schema.chimerasw.com/LD30Game">
 	
-	<Equipment name="+SmallLaser" icon="2" time="1" dmgStructure="1" dmgShields="1" dmgArmor="1" spread="45" />
-	<Equipment name="+MediumLaser" icon="2" time="2" dmgStructure="3" dmgShields="3" dmgArmor="3" spread="30" />
-	<Equipment name="+LargeLaser" icon="2" time="3" dmgStructure="6" dmgShields="6" dmgArmor="6" spread="15" />
+	<Equipment name="+SmallLaser" icon="2" time="1" dmgStructure="1" dmgShields="1" dmgArmor="1" spread="45" range="100" reload="1" />
+	<Equipment name="+MediumLaser" icon="2" time="2" dmgStructure="3" dmgShields="3" dmgArmor="3" spread="30" range="100" reload="1" />
+	<Equipment name="+LargeLaser" icon="2" time="3" dmgStructure="6" dmgShields="6" dmgArmor="6" spread="15" range="100" reload="1" />
 	
 	<Equipment name="+Armor" icon="1" time="1" armor="50" />
 	<Equipment name="+Structure" icon="1" time="1" structure="50" />

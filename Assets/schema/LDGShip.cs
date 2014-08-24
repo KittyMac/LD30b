@@ -26,6 +26,18 @@ public partial class LDGShip : LDGShipBase {
 		armor = 0;
 		shields = 0;
 
+		switch (ShipSize ()) {
+		case 0:
+			structure = armor = 20;
+			break;
+		case 1:
+			structure = armor = 50;
+			break;
+		case 2:
+			structure = armor = 200;
+			break;
+		}
+
 		foreach (LDGEquipment e in Equipments) {
 			structure += e.structure;
 			armor += e.armor;
@@ -33,18 +45,22 @@ public partial class LDGShip : LDGShipBase {
 		}
 	}
 
+	public float TotalHealth() {
+		return armor + structure + shields;
+	}
+
 	public float MaxVelocity() {
 		float baseV = 5.0f;
 
 		switch (ShipSize ()) {
 		case 0:
-			baseV = 50.0f;
+			baseV = 25.0f;
 			break;
 		case 1:
-			baseV = 20.5f;
+			baseV = 12.0f;
 			break;
 		case 2:
-			baseV = 10.0f;
+			baseV = 4.0f;
 			break;
 		}
 
@@ -87,6 +103,24 @@ public partial class LDGShip : LDGShipBase {
 	public string TexturePath()
 	{
 		return string.Format ("{0}{1}", PlayerAsString (), ShipSizeAsString ());
+	}
+
+	public void PerformDamageFromWeapon(LDGEquipment e){
+	
+		if (shields > 0) {
+			shields -= e.dmgShields;
+			return;
+		}
+
+		if (armor > 0) {
+			armor -= e.dmgArmor;
+			return;
+		}
+
+		if (structure > 0) {
+			structure -= e.dmgStructure;
+			return;
+		}
 	}
 
 }

@@ -24,7 +24,7 @@ public class GameController : MonoBehaviour, IPUCode {
 
 	public PULabel bluePlanetBuildQueueEstimatedTime;
 
-
+	protected GameAI gameAI;
 
 	protected LDGEquipment mousedEquipment = null;
 
@@ -39,6 +39,10 @@ public class GameController : MonoBehaviour, IPUCode {
 		foreach (LDGEquipment equipment in game.Equipments) {
 			equipment.GetSprite (EquipmentContainer);
 		}
+
+		// Boot up the AI
+		gameAI = new GameAI ();
+		gameAI.BeginAIForGame (game);
 	}
 
 	public void BuildShip() {
@@ -47,7 +51,7 @@ public class GameController : MonoBehaviour, IPUCode {
 
 	public void FixedUpdate() {
 
-		game.AdvanceGame (ShipsContainer);
+		game.AdvanceGame (ShipsContainer, EquipmentContainer);
 
 		// 0) Find the closest piece of equipment to the mouse position
 		// 1) if its under a certain delta scale up the equipment so its easier to see, and show the label for
@@ -162,7 +166,7 @@ public class GameController : MonoBehaviour, IPUCode {
 		Vector3 mousePos = Input.mousePosition;
 
 		mousePos.x = Mathf.Clamp (mousePos.x, 0, 960);
-		mousePos.y = Mathf.Clamp (mousePos.y, 0, 960);
+		mousePos.y = Mathf.Clamp (mousePos.y, 0, 600);
 
 		if (e == mousedEquipment) {
 			// 1) if its under a certain delta scale up the equipment so its easier to see, and show the label
@@ -195,7 +199,7 @@ public class GameController : MonoBehaviour, IPUCode {
 
 		Vector3 queuePosition = new Vector3(925,586-n*yDelta,0);
 		if (p == game.redPlanet ()) {
-			queuePosition = new Vector3(33,407-n*yDelta,0);
+			queuePosition = new Vector3(35,12+n*yDelta,0);
 		}
 		e.sprite.gameObject.transform.localPosition = MovePositionTowardsPosition (e.sprite.gameObject.transform.localPosition, queuePosition);
 	}

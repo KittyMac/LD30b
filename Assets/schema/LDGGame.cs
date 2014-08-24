@@ -45,6 +45,7 @@ public partial class LDGGame : LDGGameBase {
 	public void AddSpaceEquipment(LDGEquipment equipment) {
 		LDGEquipment clone = equipment.Clone ();
 		clone.position = new cVector3 (UnityEngine.Random.Range (96, 750), UnityEngine.Random.Range (38, 532), 0);
+		clone.velocity = new cVector3 (UnityEngine.Random.Range (-6, 6), UnityEngine.Random.Range (-6, 6), 0);
 		Equipments.Add (clone);
 	}
 
@@ -74,6 +75,12 @@ public partial class LDGGame : LDGGameBase {
 	}
 
 	public void BuildCurrentShipForPlanet(LDGPlanet p) {
+
+		// Not allowed to build empty ships
+		if (p.Equipments.Count == 0) {
+			return;
+		}
+
 		LDGShip ship = new LDGShip();
 		Vector3 exitPos = new Vector3 (934,28,0);
 
@@ -98,13 +105,47 @@ public partial class LDGGame : LDGGameBase {
 		p.AddShipToBuild (ship);
 	}
 
-	public void AdvanceGame (PUGameObject ShipsContainer){
+	public void AdvanceGame (PUGameObject ShipsContainer, PUGameObject EquipmentContainer){
 		foreach (LDGPlanet p in Planets) {
 			p.AdvanceBuildQueue (ShipsContainer);
 		}
 
+		foreach (LDGEquipment e in Equipments) {
+			Vector3 v = e.sprite.gameObject.transform.localPosition;
+			v.x += e.velocity.x;
+			v.y += e.velocity.y;
+			e.sprite.gameObject.transform.localPosition = v;
+
+			e.velocity.x *= 0.95f;
+			e.velocity.y *= 0.95f;
+		}
+
 		PerformShipMovementForPlayer(0);
 		PerformShipMovementForPlayer(1);
+
+		// Remove any casualties
+		for(int i = Ships.Count-1; i>= 0; i--){
+			LDGShip ship = Ships [i] as LDGShip;
+			if (ship.structure <= 0) {
+
+				// Remove the equipment from this ship, put it back into space
+				foreach (LDGEquipment e in ship.Equipments) {
+					Equipments.Add (e);
+
+					Vector3 p = ship.sprite.gameObject.transform.localPosition;
+					e.position = new cVector3(p.x, p.y, p.z);
+					e.velocity = new cVector3 (UnityEngine.Random.Range (-6, 6), UnityEngine.Random.Range (-6, 6), 0);
+
+					e.GetSprite (EquipmentContainer);
+				}
+
+				ship.sprite.unload ();
+				Ships.Remove (ship);
+			}
+		}
+
+
+
 	}
 
 	// We going to do a generic flocking algorithm for the ships, always targetting weakest
@@ -117,18 +158,58 @@ public partial class LDGGame : LDGGameBase {
 
 		foreach (LDGShip ship in Ships)
 		{
-			center = center + ship.sprite.gameObject.transform.localPosition;
-			velocity = velocity + ship.velocity;
-			n++;
+			if (ship.player == p) {
+				center = center + ship.sprite.gameObject.transform.localPosition;
+				velocity = velocity + ship.velocity;
+				n++;
+			}
 		}
 
 		center = center / n;
 		velocity = velocity / n;
 
-		Vector3 targetPosition = new Vector3 (280, 435, 0);
+		Vector3 targetPosition = new Vector3 (484,351, 0);
+
+		// Find the "weakest" target of the other player; ideally, weakest target of the same class ship
+		LDGShip targetShip = null;
+		foreach (LDGShip ship in Ships) {
+			if (ship.player != p) {
+				if (targetShip == null || ship.TotalHealth () < targetShip.TotalHealth ()) {
+					targetShip = ship;
+				}
+			}
+		}
+
+		if (targetShip != null) {
+			targetPosition = targetShip.sprite.gameObject.transform.localPosition;
+		}
 
 		foreach (LDGShip ship in Ships) {
-			PerformFlocking (ship, center, velocity, targetPosition);
+			if (ship.player == p) {
+				PerformFlocking (ship, center, velocity, targetPosition);
+
+				if (targetShip != null) {
+					FireAllAvailableWeapons (ship, targetShip);
+				}
+			}
+		}
+	}
+
+	public void FireAllAvailableWeapons(LDGShip fromShip, LDGShip toShip) {
+		float d = Vector3.Distance(fromShip.sprite.gameObject.transform.localPosition, toShip.sprite.gameObject.transform.localPosition);
+
+		foreach (LDGEquipment e in fromShip.Equipments) {
+			// Are we in range? (Are we even a weapon?)
+			if (e.range > 0 && e.range > d) {
+
+				e.reloadCounter -= Time.deltaTime;
+				// Have I reloaded?
+				if (e.reloadCounter <= 0) {
+					// Fire my weapon, reset the reload counter
+					toShip.PerformDamageFromWeapon (e);
+					e.reloadCounter = e.reload;
+				}
+			}
 		}
 	}
 
@@ -136,8 +217,10 @@ public partial class LDGGame : LDGGameBase {
 
 		float maxVelocity = ship.MaxVelocity ();
 		float minVelocity = 0.5f;
-		float randomness = 2.0f;
+		float randomness = 200.0f;
 
+		targetPosition.x = Mathf.Clamp (targetPosition.x, 50, 960-100);
+		targetPosition.y = Mathf.Clamp (targetPosition.y, 50, 600-100);
 
 		Vector3 randomize = new Vector3 ((UnityEngine.Random.value *2) -1, (UnityEngine.Random.value * 2) -1, (UnityEngine.Random.value * 2) -1);
 		randomize.Normalize();
@@ -161,7 +244,7 @@ public partial class LDGGame : LDGGameBase {
 			ship.velocity = ship.velocity.normalized * minVelocity;
 		}
 
-		ship.sprite.gameObject.transform.localPosition = ship.sprite.gameObject.transform.localPosition + (ship.velocity * Time.deltaTime);
+		ship.sprite.gameObject.transform.localPosition = ship.sprite.gameObject.transform.localPosition + ship.velocity * Time.fixedDeltaTime;
 
 
 		// fix rotation so we look the direction we're moving

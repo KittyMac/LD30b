@@ -14,8 +14,8 @@
 	<Label title="bluePlanetBuildTime" bounds="832,549,63,19" value="--" textColor="#FFFFFFFF" fontSize="18" />
 	<Label title="bluePlanetBuildQueue" bounds="843,576,109,18" value="--" textColor="#FFFFFFFF" fontSize="12" />
 
-	<Image bounds="@eval(888,0,72,421)" resourcePath="game/build_queue" />
-	<Image bounds="@eval(0+36,179-210,72,421)" resourcePath="game/build_queue" anchor="0.5,0.5" rotation="0,0,180" />
+	<Image bounds="@eval(888,0,72,421)" resourcePath="game/build_queue" color="#AAAAFFFF" />
+	<Image bounds="@eval(0+36,179-210,72,421)" resourcePath="game/build_queue" color="#FFAAAAFF" anchor="0.5,0.5" rotation="0,0,180" />
 	
 	<ImageButton bounds="884,432,76,22" normalResourcePath="game/build_btn" touchColor="#9999FFFF" onTouchUp="BuildShip" />
 	

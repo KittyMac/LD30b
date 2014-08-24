@@ -45,6 +45,11 @@ public partial class LDGPlanet : LDGPlanetBase {
 				game.Ships.Add (shipToProduce);
 
 				Vector3 pos = new Vector3 (857, 18, 0);
+
+				if (shipToProduce.player == 1) {
+					pos = new Vector3 (97,586, 0);
+				}
+
 				shipToProduce.sprite = new PUSprite (shipToProduce.TexturePath(), new cVector3(0,0,0), 40.0f, new cRect (0, 0, 0, 0));
 				shipToProduce.sprite.loadIntoPUGameObject (shipsContainer);
 				shipToProduce.sprite.gameObject.transform.localPosition = pos;
