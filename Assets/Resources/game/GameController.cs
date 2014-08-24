@@ -5,7 +5,8 @@ using System.Runtime.InteropServices;
 
 public class GameController : MonoBehaviour, IPUCode {
 
-	public PUGameObject GameArena;
+	public PUGameObject EquipmentContainer;
+	public PUGameObject ShipsContainer;
 	public LDGGame game = null;
 
 	public PULabel EquipmentLabel;
@@ -14,6 +15,11 @@ public class GameController : MonoBehaviour, IPUCode {
 
 	public PULabel redPlanetHealth;
 	public PULabel bluePlanetHealth;
+
+	public PULabel redPlanetBuildTime;
+	public PULabel bluePlanetBuildTime;
+
+
 
 
 	protected LDGEquipment mousedEquipment = null;
@@ -25,31 +31,19 @@ public class GameController : MonoBehaviour, IPUCode {
 		}
 
 		// load the game!
-		// 0) Add the physics walls around the edges of the arena
-		BoxCollider2D wall1 = (BoxCollider2D) GameArena.gameObject.AddComponent(typeof(BoxCollider2D));
-		wall1.center = new Vector3 (450, -50, 0);
-		wall1.size = new Vector2 (2000, 100);
-
-		BoxCollider2D wall2 = (BoxCollider2D) GameArena.gameObject.AddComponent(typeof(BoxCollider2D));
-		wall2.center = new Vector3 (450, 650, 0);
-		wall2.size = new Vector2 (2000, 100);
-
-		BoxCollider2D wall3 = (BoxCollider2D) GameArena.gameObject.AddComponent(typeof(BoxCollider2D));
-		wall3.center = new Vector3 (-50, 300, 0);
-		wall3.size = new Vector2 (100, 2000);
-
-		BoxCollider2D wall4 = (BoxCollider2D) GameArena.gameObject.AddComponent(typeof(BoxCollider2D));
-		wall4.center = new Vector3 (960+50, 300, 0);
-		wall4.size = new Vector2 (100, 2000);
-
-
 		// 1) Load all space equipment and put it in the scene...
 		foreach (LDGEquipment equipment in game.Equipments) {
-			equipment.GetSprite (GameArena);
+			equipment.GetSprite (EquipmentContainer);
 		}
 	}
 
+	public void BuildShip() {
+		game.BuildCurrentShipForPlanet (game.bluePlanet());
+	}
+
 	public void FixedUpdate() {
+
+		game.AdvanceGame (ShipsContainer);
 
 		// 0) Find the closest piece of equipment to the mouse position
 		// 1) if its under a certain delta scale up the equipment so its easier to see, and show the label for
@@ -129,6 +123,11 @@ public class GameController : MonoBehaviour, IPUCode {
 		// Update the planet health displays
 		redPlanetHealth.LoadTextString (""+game.redPlanet().health);
 		bluePlanetHealth.LoadTextString (""+game.bluePlanet().health);
+
+		// update buildtime displays
+		redPlanetBuildTime.LoadTextString (game.redPlanet().buildTimeAsString());
+		bluePlanetBuildTime.LoadTextString (game.bluePlanet().buildTimeAsString());
+
 	}
 
 	public void UpdateSpaceEquipment(LDGEquipment e)
@@ -146,9 +145,6 @@ public class GameController : MonoBehaviour, IPUCode {
 
 			// User is dragging an equipment pod
 			if (Input.GetMouseButton (0)) {
-				e.sprite.rigidBody2D.velocity = Vector2.zero;
-				e.sprite.rigidBody2D.angularVelocity = 0;
-
 				e.sprite.gameObject.transform.localPosition = mousePos;
 			}
 		} else {
@@ -156,7 +152,6 @@ public class GameController : MonoBehaviour, IPUCode {
 			if (pos.y > 180 && pos.x > 888) {
 				pos.x = 800;
 				e.sprite.gameObject.transform.localPosition = pos;
-				e.sprite.rigidBody2D.AddForce (new Vector2 (-2000, 0));
 			}
 		}
 

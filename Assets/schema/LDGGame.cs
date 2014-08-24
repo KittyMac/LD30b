@@ -34,6 +34,8 @@ public partial class LDGGame : LDGGameBase {
 		// 2) add the planets
 		LDGPlanet redPlanet = new LDGPlanet(100.0f, 0.0f);
 		LDGPlanet bluePlanet = new LDGPlanet(100.0f, 0.0f);
+		redPlanet.parent = game;
+		bluePlanet.parent = game;
 		game.Planets.Add (bluePlanet);
 		game.Planets.Add (redPlanet);
 
@@ -69,5 +71,36 @@ public partial class LDGGame : LDGGameBase {
 		p.Equipments.Add (e);
 
 		return true;
+	}
+
+	public void BuildCurrentShipForPlanet(LDGPlanet p) {
+		LDGShip ship = new LDGShip();
+		Vector3 exitPos = new Vector3 (934,28,0);
+
+		ship.player = 0;
+
+		if (p == redPlanet ()) {
+			ship.player = 1;
+			exitPos = new Vector3 (25,583,0);
+		}
+
+		ship.Equipments.AddRange (p.Equipments);
+		p.Equipments.Clear ();
+
+		ship.InitCombatValues ();
+
+		float anim = 0.0f;
+		foreach (LDGEquipment e in ship.Equipments) {
+			e.RemoveSprite (anim, exitPos);
+			anim += 1.0f / ship.Equipments.Count;
+		}
+
+		p.AddShipToBuild (ship);
+	}
+
+	public void AdvanceGame (PUGameObject ShipsContainer){
+		foreach (LDGPlanet p in Planets) {
+			p.AdvanceBuildQueue (ShipsContainer);
+		}
 	}
 }

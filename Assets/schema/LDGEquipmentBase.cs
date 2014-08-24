@@ -26,6 +26,7 @@ public partial class LDGEquipment : LDGEquipmentBase {
 			float spread,
 			float armor,
 			float structure,
+			float shields,
 			float speed,
 			float turning,
 			int special,
@@ -52,6 +53,9 @@ public partial class LDGEquipment : LDGEquipmentBase {
 
 		this.structure = structure;
 		this.structureExists = true;
+
+		this.shields = shields;
+		this.shieldsExists = true;
 
 		this.speed = speed;
 		this.speedExists = true;
@@ -115,6 +119,9 @@ public class LDGEquipmentBase : ILD30Game {
 	public float structure;
 	public bool structureExists;
 
+	public float shields;
+	public bool shieldsExists;
+
 	public float speed;
 	public bool speedExists;
 
@@ -149,6 +156,7 @@ public class LDGEquipmentBase : ILD30Game {
 	public void SetSpread(float v) { spread = v; spreadExists = true; } 
 	public void SetArmor(float v) { armor = v; armorExists = true; } 
 	public void SetStructure(float v) { structure = v; structureExists = true; } 
+	public void SetShields(float v) { shields = v; shieldsExists = true; } 
 	public void SetSpeed(float v) { speed = v; speedExists = true; } 
 	public void SetTurning(float v) { turning = v; turningExists = true; } 
 	public void SetSpecial(int v) { special = v; specialExists = true; } 
@@ -252,6 +260,10 @@ public class LDGEquipmentBase : ILD30Game {
 		if(attr != null && planetOverride != null) { attr = processStringMethod.Invoke(null, new [] {_parent, attr}).ToString(); }
 		if(attr != null) { structure = float.Parse(attr); structureExists = true; } 
 		
+		attr = reader.GetAttribute("shields");
+		if(attr != null && planetOverride != null) { attr = processStringMethod.Invoke(null, new [] {_parent, attr}).ToString(); }
+		if(attr != null) { shields = float.Parse(attr); shieldsExists = true; } 
+		
 		attr = reader.GetAttribute("speed");
 		if(attr != null && planetOverride != null) { attr = processStringMethod.Invoke(null, new [] {_parent, attr}).ToString(); }
 		if(attr != null) { speed = float.Parse(attr); speedExists = true; } 
@@ -302,6 +314,7 @@ public class LDGEquipmentBase : ILD30Game {
 		if(spreadExists) { sb.AppendFormat (" {0}=\"{1}\"", "spread", spread.ToString ("0.##")); }
 		if(armorExists) { sb.AppendFormat (" {0}=\"{1}\"", "armor", armor.ToString ("0.##")); }
 		if(structureExists) { sb.AppendFormat (" {0}=\"{1}\"", "structure", structure.ToString ("0.##")); }
+		if(shieldsExists) { sb.AppendFormat (" {0}=\"{1}\"", "shields", shields.ToString ("0.##")); }
 		if(speedExists) { sb.AppendFormat (" {0}=\"{1}\"", "speed", speed.ToString ("0.##")); }
 		if(turningExists) { sb.AppendFormat (" {0}=\"{1}\"", "turning", turning.ToString ("0.##")); }
 		if(specialExists) { sb.AppendFormat (" {0}=\"{1}\"", "special", special); }

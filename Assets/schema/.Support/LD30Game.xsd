@@ -80,9 +80,9 @@
 			<element ref="LD30Game:Equipment" minOccurs="0" maxOccurs="unbounded"/>
         </sequence>
 		<attribute name="player" type="int" />
-		<attribute name="structure" type="int" />
-		<attribute name="armor" type="int" />
-		<attribute name="shields" type="int" />
+		<attribute name="structure" type="float" />
+		<attribute name="armor" type="float" />
+		<attribute name="shields" type="float" />
 	</complexType>
 	
 	<element name="Game">
@@ -90,6 +90,7 @@
 			<sequence>
 				<element ref="LD30Game:Equipment" minOccurs="0" maxOccurs="unbounded"/>
 				<element ref="LD30Game:Planet" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="LD30Game:Ship" minOccurs="0" maxOccurs="unbounded"/>
 	        </sequence>
 			<attribute name="saveGameTag" type="int" />
         </complexType>
@@ -106,6 +107,7 @@
 		
 		<attribute name="armor" type="float" />
 		<attribute name="structure" type="float" />
+		<attribute name="shields" type="float" />
 		<attribute name="speed" type="float" />
 		<attribute name="turning" type="float" />
 						

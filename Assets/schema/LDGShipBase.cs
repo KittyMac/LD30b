@@ -21,9 +21,9 @@ public partial class LDGShip : LDGShipBase {
 	
 	public LDGShip(
 			int player,
-			int structure,
-			int armor,
-			int shields ) : this()
+			float structure,
+			float armor,
+			float shields ) : this()
 	{
 		this.player = player;
 		this.playerExists = true;
@@ -60,13 +60,13 @@ public class LDGShipBase : ILD30Game {
 	public int player;
 	public bool playerExists;
 
-	public int structure;
+	public float structure;
 	public bool structureExists;
 
-	public int armor;
+	public float armor;
 	public bool armorExists;
 
-	public int shields;
+	public float shields;
 	public bool shieldsExists;
 
 
@@ -78,9 +78,9 @@ public class LDGShipBase : ILD30Game {
 
 	
 	public void SetPlayer(int v) { player = v; playerExists = true; } 
-	public void SetStructure(int v) { structure = v; structureExists = true; } 
-	public void SetArmor(int v) { armor = v; armorExists = true; } 
-	public void SetShields(int v) { shields = v; shieldsExists = true; } 
+	public void SetStructure(float v) { structure = v; structureExists = true; } 
+	public void SetArmor(float v) { armor = v; armorExists = true; } 
+	public void SetShields(float v) { shields = v; shieldsExists = true; } 
 
 
 	public virtual void gaxb_unload()
@@ -158,15 +158,15 @@ public class LDGShipBase : ILD30Game {
 		
 		attr = reader.GetAttribute("structure");
 		if(attr != null && planetOverride != null) { attr = processStringMethod.Invoke(null, new [] {_parent, attr}).ToString(); }
-		if(attr != null) { structure = int.Parse(attr); structureExists = true; } 
+		if(attr != null) { structure = float.Parse(attr); structureExists = true; } 
 		
 		attr = reader.GetAttribute("armor");
 		if(attr != null && planetOverride != null) { attr = processStringMethod.Invoke(null, new [] {_parent, attr}).ToString(); }
-		if(attr != null) { armor = int.Parse(attr); armorExists = true; } 
+		if(attr != null) { armor = float.Parse(attr); armorExists = true; } 
 		
 		attr = reader.GetAttribute("shields");
 		if(attr != null && planetOverride != null) { attr = processStringMethod.Invoke(null, new [] {_parent, attr}).ToString(); }
-		if(attr != null) { shields = int.Parse(attr); shieldsExists = true; } 
+		if(attr != null) { shields = float.Parse(attr); shieldsExists = true; } 
 		
 
 	}
@@ -181,9 +181,9 @@ public class LDGShipBase : ILD30Game {
 	{
 
 		if(playerExists) { sb.AppendFormat (" {0}=\"{1}\"", "player", player); }
-		if(structureExists) { sb.AppendFormat (" {0}=\"{1}\"", "structure", structure); }
-		if(armorExists) { sb.AppendFormat (" {0}=\"{1}\"", "armor", armor); }
-		if(shieldsExists) { sb.AppendFormat (" {0}=\"{1}\"", "shields", shields); }
+		if(structureExists) { sb.AppendFormat (" {0}=\"{1}\"", "structure", structure.ToString ("0.##")); }
+		if(armorExists) { sb.AppendFormat (" {0}=\"{1}\"", "armor", armor.ToString ("0.##")); }
+		if(shieldsExists) { sb.AppendFormat (" {0}=\"{1}\"", "shields", shields.ToString ("0.##")); }
 
 	}
 	

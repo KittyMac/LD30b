@@ -56,6 +56,8 @@ public class LDGGameBase : ILD30Game {
 	
 	public List<object> Planets = new List<object>();
 	
+	public List<object> Ships = new List<object>();
+	
 
 	
 	public void SetSaveGameTag(int v) { saveGameTag = v; saveGameTagExists = true; } 
@@ -156,6 +158,8 @@ public class LDGGameBase : ILD30Game {
 		MethodInfo mInfo;		foreach(object o in Equipments) { mInfo = o.GetType().GetMethod("gaxb_appendXML"); if(mInfo != null) { mInfo.Invoke (o, new[] { sb }); } else { sb.AppendFormat ("<{0}>{1}</{0}>", "Equipment", o); } }
 	
 		foreach(object o in Planets) { mInfo = o.GetType().GetMethod("gaxb_appendXML"); if(mInfo != null) { mInfo.Invoke (o, new[] { sb }); } else { sb.AppendFormat ("<{0}>{1}</{0}>", "Planet", o); } }
+	
+		foreach(object o in Ships) { mInfo = o.GetType().GetMethod("gaxb_appendXML"); if(mInfo != null) { mInfo.Invoke (o, new[] { sb }); } else { sb.AppendFormat ("<{0}>{1}</{0}>", "Ship", o); } }
 	
 
 	}

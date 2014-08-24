@@ -18,11 +18,16 @@ public partial class LDGEquipment : LDGEquipmentBase {
 			sprite.gameCollider2D = (CircleCollider2D) sprite.gameObject.AddComponent(typeof(CircleCollider2D));
 			CircleCollider2D circleCollider = sprite.gameCollider2D as CircleCollider2D;
 			circleCollider.radius = 0.2f;
-
-			sprite.rigidBody2D = (Rigidbody2D)sprite.gameObject.AddComponent (typeof(Rigidbody2D));
-			sprite.rigidBody2D.gravityScale = 0.0f;
 		}
 		return sprite;
+	}
+
+	public void RemoveSprite(float anim, Vector3 exitPos)
+	{
+		LeanTween.moveLocal (sprite.gameObject, exitPos, 0.8f).setDelay(anim).setOnComplete (() => {
+			sprite.unload ();
+			sprite = null;
+		});
 	}
 
 }
