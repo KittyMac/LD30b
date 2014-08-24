@@ -4,6 +4,8 @@
 
 	<Color color="#000000FF" bounds="0,0,960,600" />
 	
+	<Image resourcePath="game/stars" bounds="0,0,960,600" />
+	
 	<Sprite title="redPlanet" position="40,40,0" scale="50" resourcePath="game/redPlanet" />
 	<Label title="redPlanetHealth" bounds="17,56,73,28" value="--" textColor="#FFFFFFFF" fontSize="28" />
 	<Label title="redPlanetBuildTime" bounds="44,28,62,19" value="--" textColor="#FFFFFFFF" fontSize="18" />
@@ -28,7 +30,7 @@
 		<Color title="EquipmentLabelColor" color="#FFFFFF66" bounds="@eval(0,0,w,h)" />
 		<Label title="EquipmentLabel" bounds="@eval(0,0,w,h)" value="" textColor="#FFFFFFFF" fontSize="14" />
 	</GameObject>
-		
+			
     <Code class="GameController">
 		<Notification name="BuildShip" />
     </Code>

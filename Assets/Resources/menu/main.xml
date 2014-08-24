@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<Scene title="scene" adjustCamera="true" bounds="0,0,960,600" xmlns="http://schema.smallplanet.com/PlanetUnity">
+
+	<ColorButton color="#000000FF" bounds="0,0,960,600" onTouchUp="GoToGame" />
+		
+	<Movie resourcePath="menu/story" bounds="@eval((w-1024)/2,(h-768)/2,1024,768)" />
+		
+	<Code class="NavigationController">
+		<Notification name="GoToGame" />
+	</Code>
+    <Code class="SoundController" singleton="true" />
+
+</Scene>

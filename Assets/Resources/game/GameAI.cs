@@ -25,6 +25,11 @@ public class GameAI : Object {
 
 			// 2) Nab equipment from the center and add it to the build queue
 			int idealNumberOfEquipments = 4;
+
+
+
+
+
 			int numberOfEquipmentNeeded = idealNumberOfEquipments - game.redPlanet ().Equipments.Count;
 
 			if(numberOfEquipmentNeeded > 0 && game.Equipments.Count > 0){
@@ -55,10 +60,10 @@ public class GameAI : Object {
 				if (waitTime > 2000) {
 					waitTime = 2000;
 				}
-				if (waitTime < 500) {
-					waitTime = 500;
+				if (waitTime < 100) {
+					waitTime = 100;
 				}
-				waitTime += random.Next () % 500;
+				waitTime += random.Next () % 200;
 
 				Thread.Sleep (waitTime);
 
