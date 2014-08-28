@@ -144,7 +144,7 @@ public class GameController : MonoBehaviour, IPUCode {
 			}
 
 
-			Vector3 mouse = Input.mousePosition;
+			Vector3 mouse = PlanetUnityGameObject.MousePosition();
 			float distance = 9999999.0f;
 			LDGEquipment closestEquipment = null;
 
@@ -237,7 +237,7 @@ public class GameController : MonoBehaviour, IPUCode {
 	{
 		float currentScale = e.sprite.gameObject.transform.localScale.x;
 		float targetScale = e.baseScale;
-		Vector3 mousePos = Input.mousePosition;
+		Vector3 mousePos = PlanetUnityGameObject.MousePosition();
 
 		mousePos.x = Mathf.Clamp (mousePos.x, 0, 960);
 		mousePos.y = Mathf.Clamp (mousePos.y, 0, 600);
